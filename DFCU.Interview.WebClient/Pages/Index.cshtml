@@ -4,7 +4,40 @@
     ViewData["Title"] = "Home page";
 }
 
+<a href="~/transactions" class="btn btn-primary">Initiate a Transaction</a>
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Transactions</h1>
+
+    @if (Model.Transactions?.Any() != true)
+    {
+    <p>No transactions found.</p>
+    }
+    else
+    {
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Payer</th>
+                <th>Payee</th>
+                <th>Currency</th>
+                <th>Amount</th>
+                <th>Narration</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var transaction in Model.Transactions)
+            {
+                <tr>
+                    <td data-id="@transaction.Id">@transaction.Payer</td>
+                    <td>@transaction.Payee</td>
+                    <td>@transaction.Currency</td>
+                    <td>@transaction.Amount.ToString("C")</td>
+                    <td>@transaction.Narration</td>
+                    <td>@transaction.PaymentStatus.ToString()</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
 </div>
