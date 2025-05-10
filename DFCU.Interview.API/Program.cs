@@ -9,10 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContextPool<PaymentDbContext>(options =>
 {
+    var sss = builder.Configuration.GetConnectionString(DConstants.ConnectionString);
     options.UseSqlServer(builder.Configuration.GetConnectionString(DConstants.ConnectionString), (e) =>
     {
         e.EnableRetryOnFailure(10, TimeSpan.FromSeconds(10), Enumerable.Range(6, 10));
-        e.MaxBatchSize(100);
         e.CommandTimeout(20);
     });
 
@@ -54,6 +54,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddLogging(logBuilder =>
+{
+    logBuilder.AddConsole();
+    logBuilder.AddConfiguration(builder.Configuration.GetSection("Logging"));
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -64,7 +70,6 @@ if (app.Environment.IsDevelopment())
 
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<PaymentDbContext>();
-    dbContext.Database.EnsureCreated();
     dbContext.Database.Migrate();
 
 }

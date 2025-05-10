@@ -15,4 +15,19 @@ public static class PaymentStatusCodeExtension
             _ => HttpStatusCode.Unused
         };
     }
+
+    public static PaymentStatus GetRandomPaymentStatus(this Random _random, ILogger _logger)
+    {
+        var randomNumber = _random.Next(1, 100);
+        
+        _logger.LogInformation("Random number generated: {randomNumber}", randomNumber);
+
+        return randomNumber switch
+        {
+            <= 5 => PaymentStatus.Failed,
+            <= 10 => PaymentStatus.Pending,
+            <= 85 => PaymentStatus.Successful,
+            _ => PaymentStatus.Failed
+        };
+    }
 }

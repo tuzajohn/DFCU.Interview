@@ -28,10 +28,6 @@ namespace DFCU.Interview.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("AccountNumber")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
                     b.Property<decimal>("Amount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -41,9 +37,22 @@ namespace DFCU.Interview.API.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
 
+                    b.Property<string>("Currency")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Narration")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Payee")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasAnnotation("CheckConstraint", "CK_Transaction_Payee_OnlyDigits CHECK (Payee NOT LIKE '%[^0-9]%')");
+
+                    b.Property<string>("Payer")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasAnnotation("CheckConstraint", "CK_Transaction_Payer_OnlyDigits CHECK (Payer NOT LIKE '%[^0-9]%')");
 
                     b.Property<string>("PaymentStatus")
                         .IsRequired()

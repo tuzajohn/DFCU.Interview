@@ -19,20 +19,18 @@ public class PaymentDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Transaction>()
-            .Property(t => t.Id)
-            .ValueGeneratedOnAdd();
-
-        modelBuilder.Entity<Transaction>()
             .Property(t => t.Amount)
             .HasPrecision(18, 2);
 
         modelBuilder.Entity<Transaction>()
-            .Property(t => t.AccountNumber)
-            .HasMaxLength(10);
+            .Property(t => t.Payer)
+            .HasMaxLength(10)
+            .HasAnnotation("CheckConstraint", "CK_Transaction_Payer_OnlyDigits CHECK (Payer NOT LIKE '%[^0-9]%')");
 
         modelBuilder.Entity<Transaction>()
-            .Property(t => t.Narration)
-            .HasMaxLength(200);
+            .Property(t => t.Payee)
+            .HasMaxLength(10)
+            .HasAnnotation("CheckConstraint", "CK_Transaction_Payee_OnlyDigits CHECK (Payee NOT LIKE '%[^0-9]%')");
 
         modelBuilder.Entity<Transaction>()
             .Property(t => t.PaymentStatus)

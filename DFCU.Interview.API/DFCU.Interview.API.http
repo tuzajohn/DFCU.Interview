@@ -4,3 +4,21 @@ GET {{DFCU.Interview.API_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{DFCU.Interview.API_HostAddress}}/api/Payments
+Content-Type: application/json
+{
+  "payer":"0123456788",
+  "payee": "0123456789",
+  "amount": 1000,
+  "currency": "USD",
+  "payerReference": "Test payment"
+}
+###
+
+GET {{DFCU.Interview.API_HostAddress}}/api/payments/80ea0a97-71dc-4282-26ab-08dd90039fe2
+Accept: application/json
+
+###
+GET {{DFCU.Interview.API_HostAddress}}/api/payments
+Accept: application/json

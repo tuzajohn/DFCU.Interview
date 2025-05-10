@@ -1,5 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DFCU.Interview.API.Data;
+using DFCU.Interview.API.Helpers.Utils;
+using DFCU.Interview.API.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
+using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,62 +14,95 @@ namespace DFCU.Interview.API.Controllers
     [ApiController]
     public class PaymentsController : ControllerBase
     {
+        private readonly PaymentDbContext _dbContext;
+        private readonly ILogger<PaymentsController> _logger;
+        readonly Random _random = new Random();
+        public PaymentsController(PaymentDbContext dbContext, ILogger<PaymentsController> logger)
+        {
+            _dbContext = dbContext;
+            _logger = logger;
+
+            _random.Next(1, 100);
+        }
+
         [HttpGet]
         public IActionResult Get()
         {
-
-            return Ok(new string[] { "value1", "value2" });
+            var transactions = _dbContext.Transactions.ToList();
+            
+            return Ok(transactions);
         }
 
         [HttpGet("{id:guid}")]
-        public IActionResult Get(Guid? id)
+        public async Task<IActionResult> Get(Guid? id)
         {
             if (id is null || id == Guid.Empty)
             {
-                return NotFound();
+                return NotFound(new
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "Transaction not found.",
+                });
             }
 
-            return Ok("value");
+            var transaction = await _dbContext.Transactions.FindAsync(id);
+
+            if (transaction is null)
+            {
+                return NotFound(new
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "Transaction not found.",
+                });
+            }
+
+            return Ok(transaction);
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody] string value)
+        public async Task<IActionResult> Post([FromBody] PaymentRequest request)
         {
-            if (string.IsNullOrEmpty(value))
+            if (!ModelState.IsValid)
             {
-                return BadRequest("Value cannot be null or empty.");
+                var errorMessage = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .Aggregate(string.Empty, (current, error) => current + error + "\n");
+
+
+                return BadRequest(new
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = $"Transaction failed {errorMessage}",
+                });
             }
 
-            return CreatedAtAction(nameof(Get), new { id = 1 }, value);
-        }
-
-        [HttpPut("{id:guid}")]
-        public IActionResult Put(Guid? id, [FromBody] string value)
-        {
-            Contract.Requires(id is not null, "Id cannot be null.");
-            Contract.Requires(id != Guid.Empty, "Id cannot be empty.");
-            Contract.Requires(!string.IsNullOrEmpty(value), "Value cannot be null or empty.");
-
-
-
-            if (string.IsNullOrEmpty(value))
+            if (request.Payer.Equals(request.Payee, StringComparison.OrdinalIgnoreCase))
             {
-                return BadRequest("Value cannot be null or empty.");
+                return BadRequest(new
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    Message = "Payer and Payee cannot be the same.",
+                });
             }
 
-            return NoContent();
-        }
-
-        // DELETE api/<PaymentsController>/5
-        [HttpDelete("{id:guid}")]
-        public IActionResult Delete(Guid? id)
-        {
-            if (id is null || id == Guid.Empty)
+            var transaction = new Domain.Models.Transaction
             {
-                return NotFound();
-            }
+                Amount = request.Amount,
+                Payer = request.Payer,
+                Payee = request.Payee,
+                Narration = request.PayerReference,
+                TransactionDate = DateTime.UtcNow,
+                Currency = request.Currency,
+                PaymentStatus = _random.GetRandomPaymentStatus(_logger)
+            };
 
-            return NoContent();
+            await _dbContext.Transactions.AddAsync(transaction);
+            await _dbContext.SaveChangesAsync();
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100));
+
+            return CreatedAtAction(nameof(Get), new { id = transaction.Id }, request);
         }
     }
 }
