@@ -25,6 +25,11 @@ namespace DFCU.Interview.API.Controllers
             _random.Next(1, 100);
         }
 
+
+        /// <summary>
+        /// Retrieves a list of transactions from the database.
+        /// </summary>
+        /// <returns>Returns an HTTP 200 response with the list of transactions.</returns>
         [HttpGet]
         public IActionResult Get()
         {
@@ -33,6 +38,14 @@ namespace DFCU.Interview.API.Controllers
             return Ok(transactions);
         }
 
+        /// <summary>
+        /// Retrieves a transaction based on a unique identifier. Returns a not found response if the identifier is
+        /// invalid or the transaction does not exist.
+        /// </summary>
+        /// <param name="id">The unique identifier used to locate a specific transaction in the database.</param>
+        /// <returns>
+        /// Returns the transaction data or not found in cases where the identifier is invalid or the transaction does not exist.
+        /// </returns>
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Get(Guid? id)
         {
@@ -59,6 +72,13 @@ namespace DFCU.Interview.API.Controllers
             return Ok(transaction);
         }
 
+        /// <summary>
+        /// Handles payment transactions by processing a payment request and saving it to the database.
+        /// </summary>
+        /// <param name="request">Contains details about the payment, including payer, payee, amount, and currency.</param>
+        /// <returns>Returns a response indicating the result of the transaction, including success or error messages.</returns>
+        /// 
+        [ProducesResponseType(typeof(PaymentRequest), StatusCodes.Status201Created)]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PaymentRequest request)
         {
