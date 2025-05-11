@@ -59,7 +59,7 @@ namespace DFCU.Interview.WebClient.Pages
             {
                 var response = await _httpClient.PostAsync("api/payments", jsonContent);
 
-                if (response.StatusCode == System.Net.HttpStatusCode.Created)
+                if (response.IsSuccessStatusCode)
                 {
                     return RedirectToPage("Index");
                 }

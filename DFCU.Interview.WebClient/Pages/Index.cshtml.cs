@@ -34,5 +34,6 @@ namespace DFCU.Interview.WebClient.Pages
         public PaymentStatus PaymentStatus { get; set; }
         public string? Narration { get; set; }
         public string? Currency { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 }
