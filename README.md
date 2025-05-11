@@ -116,9 +116,8 @@ The Payment API facilitates transactions between a payer and a payee. It support
 
 3. **Verify the Database**:
    - Check the database to ensure the tables (e.g., `Payments`) are created as per the migration.
-
-## Additional Notes
-- If you need to reset the database, you can use:
-  - For automated migrations during deployment, ensure the `Program.cs` file includes logic to apply migrations at runtime:
   
+
+# Application is READY to use :-)
+
 ---
