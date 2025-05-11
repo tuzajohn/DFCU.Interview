@@ -19,15 +19,15 @@ public static class PaymentStatusCodeExtension
     public static PaymentStatus GetRandomPaymentStatus(this Random _random, ILogger _logger)
     {
         var randomNumber = _random.Next(1, 100);
-        
+
         _logger.LogInformation("Random number generated: {randomNumber}", randomNumber);
 
+        // 0-5 = Failed, 6-15 (representing 10 % of the time) = Pending, default which is above 15 representing 85% = Successful
         return randomNumber switch
         {
             <= 5 => PaymentStatus.Failed,
-            <= 10 => PaymentStatus.Pending,
-            <= 85 => PaymentStatus.Successful,
-            _ => PaymentStatus.Failed
+            <= 15 => PaymentStatus.Pending,
+            _ => PaymentStatus.Successful
         };
     }
 }
