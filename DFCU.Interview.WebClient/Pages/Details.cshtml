@@ -21,7 +21,7 @@
             <label>Payee A/N:</label> @Model.TransactionDetails.Payee <br />
             <label>Payment Reference:</label> @Model.TransactionDetails.Narration <br />
             <label>Currency:</label> @Model.TransactionDetails.Currency <br />
-            <label>Amount:</label> @Model.TransactionDetails.Amount <br />
+            <label>Amount:</label> @Model.TransactionDetails.Amount.ToString("N2") <br />
             <label>Date:</label> @Model.TransactionDetails.CreatedOn <br />
             <label>Status:</label> @Model.TransactionDetails.PaymentStatus.ToString() <br />
         </div>
