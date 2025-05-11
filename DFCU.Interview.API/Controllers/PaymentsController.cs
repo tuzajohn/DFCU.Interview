@@ -84,12 +84,7 @@ public class PaymentsController : ControllerBase
             });
         }
 
-        return Ok(new
-        {
-            StatusCode = HttpStatusCode.OK,
-            Message = "Transaction found.",
-            Data = transaction.PaymentStatus.ToString()
-        });
+        return Ok(transaction.PaymentStatus.ToString());
     }
 
     /// <summary>

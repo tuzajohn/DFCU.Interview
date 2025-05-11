@@ -7,7 +7,7 @@
 
 
 @{
-    if (Model.TransactionDetails == null)
+    if (Model.Status is null)
     {
         <div class="alert alert-info">
             @Model.Message
@@ -16,14 +16,8 @@
     else
     {
         <div class="transaction-details">
-            <label>Transaction ID:</label> @Model.TransactionDetails.Id <br />
-            <label>Payer A/N:</label> @Model.TransactionDetails.Payer <br />
-            <label>Payee A/N:</label> @Model.TransactionDetails.Payee <br />
-            <label>Payment Reference:</label> @Model.TransactionDetails.Narration <br />
-            <label>Currency:</label> @Model.TransactionDetails.Currency <br />
-            <label>Amount:</label> @Model.TransactionDetails.Amount.ToString("N2") <br />
-            <label>Date:</label> @Model.TransactionDetails.CreatedOn <br />
-            <label>Status:</label> @Model.TransactionDetails.PaymentStatus.ToString() <br />
+            <label>Status for Transaction: <span class="fw-bold">@Model.TransactionId</span> is</label> <br />
+            <label>Status:</label> @Model.Status <br />
         </div>
     }
 }

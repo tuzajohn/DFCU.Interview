@@ -14,16 +14,19 @@ namespace DFCU.Interview.WebClient.Pages
             _logger = logger;
             _httpClient = httpClientFactory.CreateClient("DefaultClient");
         }
+
         [BindProperty(SupportsGet = true)]
         public Guid TransactionId { get; set; }
 
+        public string? Status { get; set; } = string.Empty;
         public Transaction? TransactionDetails { get; private set; }
         public string? Message { get; set; }
         public async Task<IActionResult> OnGet(Guid id)
         {
+            TransactionId = id;
             try
             {
-                var response = await _httpClient.GetAsync("api/payments/" + id);
+                var response = await _httpClient.GetAsync($"api/payments/{id}/status");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -34,8 +37,7 @@ namespace DFCU.Interview.WebClient.Pages
                 }
                 else
                 {
-
-                    TransactionDetails = await response.Content.ReadFromJsonAsync<Transaction>();
+                    Status = await response.Content.ReadAsStringAsync();
 
 
                     return Page();
